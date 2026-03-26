@@ -121,6 +121,10 @@ input[type="text"]::placeholder {
     overflow-y: auto;
     border-radius: 16px;
     padding: 10px 0;
+    z-index: 1000;
+    background: rgba(25, 35, 50, 0.95);
+    backdrop-filter: blur(24px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .search-results.hidden {

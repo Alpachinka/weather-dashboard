@@ -16,7 +16,18 @@ export default function SearchBar({ onSelectLocation, onRequestGeoLocation }) {
 
     const delayDebounceFn = setTimeout(async () => {
       const cities = await searchCities(query.trim());
-      setResults(cities);
+      
+      const uniqueCities = [];
+      const seen = new Set();
+      for (const city of cities) {
+        const key = `${city.name}-${city.country}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueCities.push(city);
+        }
+      }
+
+      setResults(uniqueCities);
       setShowResults(true);
     }, 500);
 
