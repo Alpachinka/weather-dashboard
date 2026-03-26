@@ -3,99 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Інтерактивний погодний дашборд</title>
+    <title>Інтерактивний погодний дашборд (React)</title>
     <!-- Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Глобальні стилі -->
-    <link rel="stylesheet" href="./src/styles/main.css">
-    <!-- Chart.js для графіків -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body class="weather-default">
-    <div id="app-container" class="glass-panel main-container fade-in">
-        
-        <!-- Верхня панель: Пошук та Геолокація -->
-        <header class="header">
-            <div class="search-box glass-panel">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="search-input" placeholder="Пошук міста (наприклад, Київ)..." autocomplete="off">
-                <button id="location-btn" class="icon-btn" title="Моя локація">
-                    <i class="fa-solid fa-location-crosshairs"></i>
-                </button>
-            </div>
-            <!-- Випадаючий список з результатами (прихований за замовчуванням) -->
-            <ul id="search-results" class="search-results glass-panel hidden"></ul>
-        </header>
-
-        <!-- Основна секція -->
-        <main class="dashboard" id="dashboard-content">
-            <!-- Повідомлення про завантаження / помилки -->
-            <div id="status-message" class="status-message">
-                Введіть назву міста для перегляду погоди або натисніть іконку локації.
-            </div>
-
-            <div class="weather-grid hidden" id="weather-grid">
-                <!-- Поточна погода -->
-                <section class="current-weather glass-panel">
-                    <div class="weather-header">
-                        <h1 id="city-name">--</h1>
-                        <p id="current-date">--</p>
-                    </div>
-                    <div class="weather-main">
-                        <i id="current-icon" class="fa-solid fa-cloud" style="font-size: 4rem;"></i>
-                        <div class="temperature">
-                            <span id="current-temp">--</span>°C
-                        </div>
-                    </div>
-                    <p id="weather-description" class="weather-desc">--</p>
-                    
-                    <div class="weather-details">
-                        <div class="detail-item">
-                            <i class="fa-solid fa-wind"></i>
-                            <div>
-                                <p class="label">Вітер</p>
-                                <p id="wind-speed" class="val">-- км/год</p>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fa-solid fa-droplet"></i>
-                            <div>
-                                <p class="label">Вологість</p>
-                                <p id="humidity" class="val">-- %</p>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fa-solid fa-temperature-half"></i>
-                            <div>
-                                <p class="label">Відчувається як</p>
-                                <p id="feels-like" class="val">-- °C</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Графік погодинного прогнозу -->
-                <section class="forecast-chart glass-panel">
-                    <h2>Прогноз на 24 години</h2>
-                    <div class="chart-container">
-                        <canvas id="hourly-chart"></canvas>
-                    </div>
-                </section>
-
-                <!-- Прогноз на 7 днів -->
-                <section class="weekly-forecast glass-panel">
-                    <h2>Прогноз на 7 днів</h2>
-                    <div id="weekly-container" class="weekly-container">
-                        <!-- Дані будуть згенеровані через JS -->
-                    </div>
-                </section>
-            </div>
-        </main>
-    </div>
-
-    <!-- Підключення головного JS файлу як модуля -->
-    <script type="module" src="./src/js/app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

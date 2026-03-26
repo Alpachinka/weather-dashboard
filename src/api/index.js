@@ -1,51 +1,38 @@
-// src/js/api.js
+import { GeoSearchResponseSchema, WeatherResponseSchema } from "./schemas.js";
 
 const WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast";
 const GEO_API_URL = "https://geocoding-api.open-meteo.com/v1/search";
 
-/**
- * Отримує координати та дані міста за його назвою (автодоповнення)
- * @param {string} query 
- */
 export async function searchCities(query) {
     if (!query || query.length < 2) return [];
 
     try {
         const response = await fetch(`${GEO_API_URL}?name=${encodeURIComponent(query)}&count=5&language=uk&format=json`);
         const data = await response.json();
-        return data.results || [];
+        const parsed = GeoSearchResponseSchema.parse(data);
+        return parsed.results || [];
     } catch (error) {
-        console.error("Помилка пошуку міста:", error);
+        console.error("Помилка пошуку міста або валідації Zod:", error);
         return [];
     }
 }
 
-/**
- * Отримує погоду за координатами
- * Включає поточну погоду, погодинний та щоденний прогноз
- * @param {number} lat 
- * @param {number} lon 
- */
 export async function getWeather(lat, lon) {
     try {
-        // Запитуємо всі необхідні дані одним викликом
         const url = `${WEATHER_API_URL}?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&past_days=0`;
         const response = await fetch(url);
         
         if (!response.ok) throw new Error("Помилка завантаження даних погоди");
         
-        return await response.json();
+        const data = await response.json();
+        // Zod validation here
+        return WeatherResponseSchema.parse(data);
     } catch (error) {
-        console.error("Помилка API погоди:", error);
+        console.error("Помилка API погоди або помилка валідації Zod:", error);
         throw error;
     }
 }
 
-/**
- * Розшифровує код погоди (WMO Weather interpretation codes) 
- * у зрозумілі тексти та іконки (відповідно до Font Awesome).
- * Можна розширювати для більшої деталізації.
- */
 export function parseWeatherCode(code) {
     const codes = {
         0: { text: "Ясно", icon: "fa-solid fa-sun", bg: "weather-clear" },
@@ -70,6 +57,5 @@ export function parseWeatherCode(code) {
         96: { text: "Гроза з градом", icon: "fa-solid fa-cloud-bolt", bg: "weather-rain" },
         99: { text: "Сильна гроза з градом", icon: "fa-solid fa-cloud-bolt", bg: "weather-rain" },
     };
-
     return codes[code] || { text: "Невідомо", icon: "fa-solid fa-circle-question", bg: "weather-default" };
 }
