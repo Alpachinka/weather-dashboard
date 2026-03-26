@@ -34,7 +34,8 @@ export default function HourlyForecast({ hourly }) {
   if (!hourly) return null;
 
   const startIndex = getCurrentHourIndex(hourly.time);
-  const times = hourly.time.slice(startIndex, startIndex + 24).map((t) => {
+  const rawTimes = hourly.time.slice(startIndex, startIndex + 24);
+  const times = rawTimes.map((t) => {
     const d = new Date(t);
     return d.toLocaleTimeString("uk-UA", {
       hour: "2-digit",
@@ -67,6 +68,32 @@ export default function HourlyForecast({ hourly }) {
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
+      tooltip: {
+        backgroundColor: "rgba(25, 35, 50, 0.9)",
+        titleFont: { size: 13, family: "Inter", weight: "normal" },
+        bodyFont: { size: 15, family: "Inter", weight: "bold" },
+        titleColor: "rgba(255, 255, 255, 0.7)",
+        bodyColor: "#ffffff",
+        padding: 12,
+        cornerRadius: 12,
+        displayColors: false,
+        callbacks: {
+          title: (tooltipItems) => {
+            const index = tooltipItems[0].dataIndex;
+            const d = new Date(rawTimes[index]);
+            return d.toLocaleString("uk-UA", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+          },
+          label: (context) => {
+            return `Температура: ${context.parsed.y} °C`;
+          }
+        }
+      }
     },
     scales: {
       x: {
