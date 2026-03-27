@@ -15,6 +15,10 @@
     --bg-snow: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
 }
 
+html {
+    overflow-x: hidden;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -24,6 +28,8 @@
 
 body {
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -54,6 +60,7 @@ body.weather-snow { background: var(--bg-snow); }
 .main-container {
     width: 100%;
     max-width: 1200px;
+    min-width: 0;
     padding: 30px;
     display: flex;
     flex-direction: column;
@@ -244,6 +251,8 @@ section h2 {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .weather-header h1 {
@@ -291,6 +300,7 @@ section h2 {
     align-items: center;
     gap: 15px;
     text-align: left;
+    min-width: 0;
 }
 
 .detail-item i {
