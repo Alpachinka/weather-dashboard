@@ -84,6 +84,15 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
             </p>
           </div>
         </div>
+        <div className="detail-item">
+          <i className="fa-solid fa-sun"></i>
+          <div>
+            <p className="label">УФ-індекс (Макс)</p>
+            <p id="uv-index" className="val">
+              {data.daily?.uv_index_max ? Math.round(data.daily.uv_index_max[0]) : "--"}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

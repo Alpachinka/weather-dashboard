@@ -33,5 +33,6 @@ export const WeatherResponseSchema = z.object({
     temperature_2m_min: z.array(z.number()),
     precipitation_sum: z.array(z.number()).optional(),
     wind_speed_10m_max: z.array(z.number()).optional(),
+    uv_index_max: z.array(z.number()).optional(),
   }),
 });
