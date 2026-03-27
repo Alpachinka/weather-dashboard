@@ -110,8 +110,9 @@ export default function App() {
 
       <main className="dashboard" id="dashboard-content">
         {loading && (
-          <div id="status-message" className="status-message" style={{ display: "block" }}>
-            Завантаження погодних даних...
+          <div className="loader-container glass-panel fade-in">
+            <div className="spinner"></div>
+            <h3 style={{ fontWeight: 500 }}>Оновлюємо погоду...</h3>
           </div>
         )}
 
