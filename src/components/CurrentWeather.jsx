@@ -24,6 +24,15 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
   const displayTemp = unit === "F" ? Math.round(current.temperature_2m * 9/5 + 32) : Math.round(current.temperature_2m);
   const displayFeels = unit === "F" ? Math.round(current.apparent_temperature * 9/5 + 32) : Math.round(current.apparent_temperature);
 
+  const formatTime = (isoStr) => {
+    if (!isoStr) return "--";
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const sunrise = data.daily?.sunrise?.[0];
+  const sunset = data.daily?.sunset?.[0];
+
   return (
     <section className="current-weather glass-panel">
       <div className="weather-header" style={{ position: "relative" }}>
@@ -94,6 +103,20 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
             <p id="uv-index" className="val">
               {data.daily?.uv_index_max ? Math.round(data.daily.uv_index_max[0]) : "--"}
             </p>
+          </div>
+        </div>
+        <div className="detail-item">
+          <i className="fa-solid fa-arrow-up" style={{color: "#fbbf24"}}></i>
+          <div>
+            <p className="label">Схід сонця</p>
+            <p className="val">{formatTime(sunrise)}</p>
+          </div>
+        </div>
+        <div className="detail-item">
+          <i className="fa-solid fa-arrow-down" style={{color: "#a78bfa"}}></i>
+          <div>
+            <p className="label">Захід сонця</p>
+            <p className="val">{formatTime(sunset)}</p>
           </div>
         </div>
       </div>

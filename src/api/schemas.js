@@ -24,6 +24,8 @@ export const WeatherResponseSchema = z.object({
   hourly: z.object({
     time: z.array(z.string()),
     temperature_2m: z.array(z.number()),
+    wind_speed_10m: z.array(z.number()).optional(),
+    precipitation_probability: z.array(z.number()).optional(),
     weather_code: z.array(z.number()),
   }),
   daily: z.object({
@@ -34,5 +36,7 @@ export const WeatherResponseSchema = z.object({
     precipitation_sum: z.array(z.number()).optional(),
     wind_speed_10m_max: z.array(z.number()).optional(),
     uv_index_max: z.array(z.number()).optional(),
+    sunrise: z.array(z.string()).optional(),
+    sunset: z.array(z.string()).optional(),
   }),
 });

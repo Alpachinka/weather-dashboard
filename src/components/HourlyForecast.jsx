@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,7 +30,15 @@ function getCurrentHourIndex(timesArray) {
   return index !== -1 ? index : 0;
 }
 
+const CHART_TYPES = [
+  { key: "temperature", label: "🌡 Температура", color: "rgba(255, 255, 255, 0.9)" },
+  { key: "wind", label: "💨 Вітер", color: "rgba(147, 197, 253, 0.9)" },
+  { key: "precipitation", label: "🌧 Опади", color: "rgba(165, 243, 252, 0.9)" },
+];
+
 export default function HourlyForecast({ hourly, unit }) {
+  const [chartType, setChartType] = useState("temperature");
+
   if (!hourly) return null;
 
   const startIndex = getCurrentHourIndex(hourly.time);
@@ -42,19 +50,50 @@ export default function HourlyForecast({ hourly, unit }) {
       minute: "2-digit",
     });
   });
-  const rawTemps = hourly.temperature_2m.slice(startIndex, startIndex + 24);
-  const temps = unit === "F" ? rawTemps.map((t) => t * 9/5 + 32) : rawTemps;
 
   ChartJS.defaults.color = "rgba(255, 255, 255, 0.8)";
+
+  const getDataset = () => {
+    if (chartType === "temperature") {
+      const rawTemps = hourly.temperature_2m.slice(startIndex, startIndex + 24);
+      const temps = unit === "F" ? rawTemps.map((t) => t * 9/5 + 32) : rawTemps;
+      return {
+        data: temps,
+        unit: `°${unit}`,
+        color: CHART_TYPES[0].color,
+        label: `Температура (°${unit})`,
+      };
+    }
+    if (chartType === "wind") {
+      const wind = (hourly.wind_speed_10m || []).slice(startIndex, startIndex + 24);
+      return {
+        data: wind,
+        unit: "км/год",
+        color: CHART_TYPES[1].color,
+        label: "Швидкість вітру (км/год)",
+      };
+    }
+    if (chartType === "precipitation") {
+      const precip = (hourly.precipitation_probability || []).slice(startIndex, startIndex + 24);
+      return {
+        data: precip,
+        unit: "%",
+        color: CHART_TYPES[2].color,
+        label: "Ймовірність опадів (%)",
+      };
+    }
+  };
+
+  const ds = getDataset();
 
   const chartData = {
     labels: times,
     datasets: [
       {
-        label: `Температура (°${unit})`,
-        data: temps,
-        borderColor: "#ffffff",
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
+        label: ds.label,
+        data: ds.data,
+        borderColor: ds.color,
+        backgroundColor: ds.color.replace("0.9", "0.15"),
         borderWidth: 2,
         tension: 0.4,
         fill: true,
@@ -95,7 +134,7 @@ export default function HourlyForecast({ hourly, unit }) {
             });
           },
           label: (context) => {
-            return `Температура: ${Math.round(context.parsed.y)} °${unit}`;
+            return `${ds.label.split("(")[0].trim()}: ${Math.round(context.parsed.y)} ${ds.unit}`;
           }
         }
       }
@@ -106,7 +145,7 @@ export default function HourlyForecast({ hourly, unit }) {
       },
       y: {
         grid: { color: "rgba(255, 255, 255, 0.1)" },
-        ticks: { callback: (val) => val + "°" },
+        ticks: { callback: (val) => Math.round(val) + " " + ds.unit },
       },
     },
   };
@@ -114,7 +153,21 @@ export default function HourlyForecast({ hourly, unit }) {
   return (
     <section className="forecast-chart glass-panel">
       <h2>Прогноз на 24 години</h2>
-      <div className="chart-container" style={{ position: "relative", height: "250px", width: "100%" }}>
+
+      {/* Chart type switcher */}
+      <div className="chart-switcher">
+        {CHART_TYPES.map((ct) => (
+          <button
+            key={ct.key}
+            className={`chart-switch-btn ${chartType === ct.key ? "active" : ""}`}
+            onClick={() => setChartType(ct.key)}
+          >
+            {ct.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="chart-container" style={{ position: "relative", height: "220px", width: "100%" }}>
         <Line data={chartData} options={chartOptions} />
       </div>
     </section>
