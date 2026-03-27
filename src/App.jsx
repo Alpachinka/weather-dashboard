@@ -88,31 +88,12 @@ export default function App() {
 
   return (
     <div id="app-container" className="glass-panel main-container fade-in" style={{ position: "relative" }}>
-      <button 
-        className="icon-btn glass-panel"
-        onClick={() => setUnit(unit === "C" ? "F" : "C")}
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          width: "40px",
-          height: "40px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontWeight: "bold",
-          fontSize: "1.1rem",
-          zIndex: 1000
-        }}
-        title="Перемкнути C/F"
-      >
-        °{unit}
-      </button>
-
       <header className="header" style={{ width: "100%", zIndex: 100 }}>
         <SearchBar
           onSelectLocation={loadWeather}
           onRequestGeoLocation={() => getUserLocation()}
+          unit={unit}
+          onToggleUnit={() => setUnit(unit === "C" ? "F" : "C")}
         />
         
         {favorites.length > 0 && (

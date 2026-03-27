@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { searchCities } from "../api";
 
-export default function SearchBar({ onSelectLocation, onRequestGeoLocation }) {
+export default function SearchBar({ onSelectLocation, onRequestGeoLocation, unit, onToggleUnit }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -76,6 +76,21 @@ export default function SearchBar({ onSelectLocation, onRequestGeoLocation }) {
           onClick={onRequestGeoLocation}
         >
           <i className="fa-solid fa-location-crosshairs"></i>
+        </button>
+        <button
+          className="icon-btn"
+          title="Перемкнути °C / °F"
+          onClick={onToggleUnit}
+          style={{
+            marginLeft: "10px",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: "35px"
+          }}
+        >
+          °{unit}
         </button>
       </div>
 
