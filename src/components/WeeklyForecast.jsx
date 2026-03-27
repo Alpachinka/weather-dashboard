@@ -3,7 +3,7 @@ import { parseWeatherCode } from "../api";
 
 const shortDaysMap = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
 
-export default function WeeklyForecast({ daily }) {
+export default function WeeklyForecast({ daily, unit }) {
   const [expandedIndex, setExpandedIndex] = useState(null);
 
   if (!daily) return null;
@@ -34,8 +34,8 @@ export default function WeeklyForecast({ daily }) {
         <i className={wInfo.icon} style={{ fontSize: isExpanded ? "2.5rem" : "2rem", transition: "0.2s" }}></i>
         
         <div className="temps">
-          <span className="max">{Math.round(daily.temperature_2m_max[i])}°</span>
-          <span className="min">{Math.round(daily.temperature_2m_min[i])}°</span>
+          <span className="max">{Math.round(unit === 'F' ? daily.temperature_2m_max[i] * 9/5 + 32 : daily.temperature_2m_max[i])}°</span>
+          <span className="min">{Math.round(unit === 'F' ? daily.temperature_2m_min[i] * 9/5 + 32 : daily.temperature_2m_min[i])}°</span>
         </div>
 
         {isExpanded && (

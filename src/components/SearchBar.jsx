@@ -27,7 +27,11 @@ export default function SearchBar({ onSelectLocation, onRequestGeoLocation }) {
         }
       }
 
-      setResults(uniqueCities);
+      const qLow = query.trim().toLowerCase();
+      const exactMatches = uniqueCities.filter(c => c.name.toLowerCase() === qLow);
+      const partialMatches = uniqueCities.filter(c => c.name.toLowerCase() !== qLow);
+
+      setResults([...exactMatches, ...partialMatches]);
       setShowResults(true);
     }, 500);
 

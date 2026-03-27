@@ -10,6 +10,7 @@ export default function App() {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [unit, setUnit] = useState("C");
   
   // Favorites State
   const [favorites, setFavorites] = useState(() => {
@@ -86,7 +87,28 @@ export default function App() {
     : false;
 
   return (
-    <div id="app-container" className="glass-panel main-container fade-in">
+    <div id="app-container" className="glass-panel main-container fade-in" style={{ position: "relative" }}>
+      <button 
+        className="icon-btn glass-panel"
+        onClick={() => setUnit(unit === "C" ? "F" : "C")}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          width: "40px",
+          height: "40px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: "bold",
+          fontSize: "1.1rem",
+          zIndex: 1000
+        }}
+        title="Перемкнути C/F"
+      >
+        °{unit}
+      </button>
+
       <header className="header" style={{ width: "100%", zIndex: 100 }}>
         <SearchBar
           onSelectLocation={loadWeather}
@@ -129,9 +151,10 @@ export default function App() {
               cityName={currentLocation.name}
               isFavorite={isCurrentFavorite}
               onToggleFavorite={() => toggleFavorite(currentLocation)}
+              unit={unit}
             />
-            <HourlyForecast hourly={weatherData.hourly} />
-            <WeeklyForecast daily={weatherData.daily} />
+            <HourlyForecast hourly={weatherData.hourly} unit={unit} />
+            <WeeklyForecast daily={weatherData.daily} unit={unit} />
           </div>
         )}
       </main>

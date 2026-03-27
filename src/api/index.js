@@ -7,7 +7,7 @@ export async function searchCities(query) {
     if (!query || query.length < 2) return [];
 
     try {
-        const response = await fetch(`${GEO_API_URL}?name=${encodeURIComponent(query)}&count=5&language=uk&format=json`);
+        const response = await fetch(`${GEO_API_URL}?name=${encodeURIComponent(query)}&count=15&language=uk&format=json`);
         const data = await response.json();
         const parsed = GeoSearchResponseSchema.parse(data);
         return parsed.results || [];

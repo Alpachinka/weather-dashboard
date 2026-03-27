@@ -30,7 +30,7 @@ function getCurrentHourIndex(timesArray) {
   return index !== -1 ? index : 0;
 }
 
-export default function HourlyForecast({ hourly }) {
+export default function HourlyForecast({ hourly, unit }) {
   if (!hourly) return null;
 
   const startIndex = getCurrentHourIndex(hourly.time);
@@ -42,7 +42,8 @@ export default function HourlyForecast({ hourly }) {
       minute: "2-digit",
     });
   });
-  const temps = hourly.temperature_2m.slice(startIndex, startIndex + 24);
+  const rawTemps = hourly.temperature_2m.slice(startIndex, startIndex + 24);
+  const temps = unit === "F" ? rawTemps.map((t) => t * 9/5 + 32) : rawTemps;
 
   ChartJS.defaults.color = "rgba(255, 255, 255, 0.8)";
 
@@ -50,7 +51,7 @@ export default function HourlyForecast({ hourly }) {
     labels: times,
     datasets: [
       {
-        label: "Температура (°C)",
+        label: `Температура (°${unit})`,
         data: temps,
         borderColor: "#ffffff",
         backgroundColor: "rgba(255, 255, 255, 0.2)",
@@ -94,7 +95,7 @@ export default function HourlyForecast({ hourly }) {
             });
           },
           label: (context) => {
-            return `Температура: ${context.parsed.y} °C`;
+            return `Температура: ${Math.round(context.parsed.y)} °${unit}`;
           }
         }
       }

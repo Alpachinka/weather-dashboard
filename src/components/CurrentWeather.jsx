@@ -10,7 +10,7 @@ const daysMap = [
   "Субота",
 ];
 
-export default function CurrentWeather({ data, cityName, isFavorite, onToggleFavorite }) {
+export default function CurrentWeather({ data, cityName, isFavorite, onToggleFavorite, unit }) {
   if (!data?.current) return null;
 
   const current = data.current;
@@ -20,6 +20,9 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
   }, ${nowLocalDate.toLocaleDateString("uk-UA")}`;
 
   const wInfo = parseWeatherCode(current.weather_code);
+
+  const displayTemp = unit === "F" ? Math.round(current.temperature_2m * 9/5 + 32) : Math.round(current.temperature_2m);
+  const displayFeels = unit === "F" ? Math.round(current.apparent_temperature * 9/5 + 32) : Math.round(current.apparent_temperature);
 
   return (
     <section className="current-weather glass-panel">
@@ -49,7 +52,7 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
           style={{ fontSize: "4rem", color: "white" }}
         ></i>
         <div className="temperature">
-          <span id="current-temp">{Math.round(current.temperature_2m)}</span>°C
+          <span id="current-temp">{displayTemp}</span>°{unit}
         </div>
       </div>
       <p id="weather-description" className="weather-desc">
@@ -80,7 +83,7 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
           <div>
             <p className="label">Відчувається як</p>
             <p id="feels-like" className="val">
-              {Math.round(current.apparent_temperature)} °C
+              {displayFeels} °{unit}
             </p>
           </div>
         </div>
