@@ -91,6 +91,7 @@ input[type="text"] {
     color: white;
     font-size: 1.1rem;
     flex: 1;
+    min-width: 0;
 }
 
 input[type="text"]::placeholder {
@@ -384,10 +385,12 @@ section h2 {
 @media (max-width: 900px) {
     .weather-grid {
         grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
     }
     
     .current-weather, .forecast-chart, .weekly-forecast {
         grid-column: 1 / -1;
+        grid-row: auto;
     }
 }
 
