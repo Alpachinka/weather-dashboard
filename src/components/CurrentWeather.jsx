@@ -10,7 +10,7 @@ const daysMap = [
   "Субота",
 ];
 
-export default function CurrentWeather({ data, cityName }) {
+export default function CurrentWeather({ data, cityName, isFavorite, onToggleFavorite }) {
   if (!data?.current) return null;
 
   const current = data.current;
@@ -23,8 +23,23 @@ export default function CurrentWeather({ data, cityName }) {
 
   return (
     <section className="current-weather glass-panel">
-      <div className="weather-header">
-        <h1 id="city-name">{cityName || "--"}</h1>
+      <div className="weather-header" style={{ position: "relative" }}>
+        <h1 id="city-name" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+          {cityName || "--"}
+          {cityName && (
+            <i
+              className={isFavorite ? "fa-solid fa-star" : "fa-regular fa-star"}
+              onClick={onToggleFavorite}
+              style={{
+                color: isFavorite ? "#fbbf24" : "rgba(255,255,255,0.7)",
+                cursor: "pointer",
+                fontSize: "1.8rem",
+                transition: "color 0.2s"
+              }}
+              title="Зберегти в улюблені"
+            ></i>
+          )}
+        </h1>
         <p id="current-date">{dateString}</p>
       </div>
       <div className="weather-main">

@@ -7,9 +7,29 @@ import { getWeather, parseWeatherCode } from "./api";
 
 export default function App() {
   const [weatherData, setWeatherData] = useState(null);
-  const [cityName, setCityName] = useState("");
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Favorites State
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem("weather-favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("weather-favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (locationPayload) => {
+    if (!locationPayload) return;
+    const isFav = favorites.find((f) => f.name === locationPayload.name);
+    if (isFav) {
+      setFavorites(favorites.filter((f) => f.name !== locationPayload.name));
+    } else {
+      setFavorites([...favorites, locationPayload]);
+    }
+  };
 
   const loadWeather = async (lat, lon, name) => {
     setLoading(true);
@@ -17,7 +37,7 @@ export default function App() {
     try {
       const data = await getWeather(lat, lon);
       setWeatherData(data);
-      setCityName(name);
+      setCurrentLocation({ lat, lon, name });
 
       // Change background
       const wInfo = parseWeatherCode(data.current.weather_code);
@@ -61,9 +81,32 @@ export default function App() {
     getUserLocation(50.4501, 30.5234, "Київ");
   }, []);
 
+  const isCurrentFavorite = currentLocation
+    ? favorites.some((f) => f.name === currentLocation.name)
+    : false;
+
   return (
     <div id="app-container" className="glass-panel main-container fade-in">
-      <SearchBar onSelectLocation={loadWeather} onRequestGeoLocation={() => getUserLocation()} />
+      <header className="header" style={{ width: "100%", zIndex: 100 }}>
+        <SearchBar
+          onSelectLocation={loadWeather}
+          onRequestGeoLocation={() => getUserLocation()}
+        />
+        
+        {favorites.length > 0 && (
+          <div className="favorites-container">
+            {favorites.map((fav, idx) => (
+              <button
+                key={idx}
+                className="favorite-badge"
+                onClick={() => loadWeather(fav.lat, fav.lon, fav.name)}
+              >
+                ★ {fav.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </header>
 
       <main className="dashboard" id="dashboard-content">
         {loading && (
@@ -78,9 +121,14 @@ export default function App() {
           </div>
         )}
 
-        {!loading && !error && weatherData && (
+        {!loading && !error && weatherData && currentLocation && (
           <div className="weather-grid" id="weather-grid">
-            <CurrentWeather data={weatherData} cityName={cityName} />
+            <CurrentWeather
+              data={weatherData}
+              cityName={currentLocation.name}
+              isFavorite={isCurrentFavorite}
+              onToggleFavorite={() => toggleFavorite(currentLocation)}
+            />
             <HourlyForecast hourly={weatherData.hourly} />
             <WeeklyForecast daily={weatherData.daily} />
           </div>
