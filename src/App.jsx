@@ -3,6 +3,8 @@ import SearchBar from "./components/SearchBar";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyForecast from "./components/HourlyForecast";
 import WeeklyForecast from "./components/WeeklyForecast";
+import WeatherSuggestions from "./components/WeatherSuggestions";
+import WindyMap from "./components/WindyMap";
 import { getWeather, parseWeatherCode } from "./api";
 
 export default function App() {
@@ -137,6 +139,13 @@ export default function App() {
             <HourlyForecast hourly={weatherData.hourly} unit={unit} />
             <WeeklyForecast daily={weatherData.daily} unit={unit} />
           </div>
+        )}
+
+        {!loading && !error && weatherData && currentLocation && (
+          <>
+            <WeatherSuggestions data={weatherData} unit={unit} />
+            <WindyMap lat={currentLocation.lat} lon={currentLocation.lon} />
+          </>
         )}
       </main>
     </div>

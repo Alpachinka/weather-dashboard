@@ -494,6 +494,70 @@ section h2 {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* === Suggestions Panel === */
+.suggestions-panel {
+    padding: 30px;
+}
+
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 15px;
+}
+
+.suggestion-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    padding: 18px;
+    transition: background 0.2s;
+}
+
+.suggestion-card:hover {
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.outfit-card {
+    border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.suggestion-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.suggestion-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.suggestion-desc {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+}
+
+/* === Windy Map Panel === */
+.windy-panel {
+    padding: 30px;
+}
+
+.windy-subtitle {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 20px;
+}
+
+.windy-container {
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.15);
+}
+
 /* Адаптивність */
 @media (max-width: 900px) {
     .weather-grid {
