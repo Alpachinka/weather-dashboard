@@ -4,7 +4,6 @@ export default function WeatherSuggestions({ data, unit }) {
 
   const temp = data.current.temperature_2m;
   const uvIndex = data.daily?.uv_index_max?.[0];
-  const precipitation = data.daily?.precipitation_sum?.[0];
   const windSpeed = data.current.wind_speed_10m;
   const weatherCode = data.current.weather_code;
 
@@ -20,19 +19,69 @@ export default function WeatherSuggestions({ data, unit }) {
     return           { emoji: "🌡️", label: "Сильна спека", desc: "Максимально легкий одяг, уникайте прямого сонця." };
   };
 
+  // Best hour to go for a walk based on hourly temps (warmest comfortable time today)
+  const getBestWalkTime = () => {
+    if (!data.hourly?.time || !data.hourly?.temperature_2m) return null;
+
+    const now = new Date();
+    const nowHour = now.getHours();
+    const todayPrefix = now.toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+    let bestIdx = -1;
+    let bestScore = -Infinity;
+
+    data.hourly.time.forEach((t, i) => {
+      if (!t.startsWith(todayPrefix)) return;
+      const hour = new Date(t).getHours();
+      if (hour < nowHour) return; // skip past hours
+
+      const hourTemp = data.hourly.temperature_2m[i];
+      const wind = data.hourly.wind_speed_10m?.[i] ?? 0;
+      const precip = data.hourly.precipitation_probability?.[i] ?? 0;
+
+      // Score: warmer & less wind & less rain = better
+      const score = hourTemp - (wind * 0.2) - (precip * 0.3);
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = i;
+      }
+    });
+
+    if (bestIdx === -1) return null;
+
+    const bestHour = new Date(data.hourly.time[bestIdx]).getHours();
+    const bestTemp = Math.round(
+      unit === "F"
+        ? data.hourly.temperature_2m[bestIdx] * 9/5 + 32
+        : data.hourly.temperature_2m[bestIdx]
+    );
+    return { hour: `${String(bestHour).padStart(2, "0")}:00`, temp: bestTemp };
+  };
+
+  // Tomorrow vs today comparison
+  const getTomorrowComparison = () => {
+    if (!data.daily?.temperature_2m_max || data.daily.temperature_2m_max.length < 2) return null;
+
+    const todayMax = data.daily.temperature_2m_max[0];
+    const tomorrowMax = data.daily.temperature_2m_max[1];
+    const diff = Math.round(tomorrowMax - todayMax);
+    const displayDiff = unit === "F" ? Math.round(diff * 9/5) : diff;
+
+    if (diff > 0) return { emoji: "📈", trend: `+${displayDiff}°${unit}`, desc: `Завтра буде тепліше на ${Math.abs(displayDiff)}°`, color: "#fbbf24" };
+    if (diff < 0) return { emoji: "📉", trend: `${displayDiff}°${unit}`, desc: `Завтра буде холодніше на ${Math.abs(displayDiff)}°`, color: "#93c5fd" };
+    return { emoji: "➡️", trend: `0°`, desc: "Завтра очікується така ж температура як сьогодні", color: "rgba(255,255,255,0.8)" };
+  };
+
   // Smart weather tips
   const getTips = () => {
     const tips = [];
 
-    // Rain/storm tips
     if ([51,53,55,61,63,65,80,81,82,95,96,99].includes(weatherCode)) {
       tips.push({ emoji: "☂️", text: "Очікуються опади — візьміть парасолю або дощовик." });
     }
     if ([95,96,99].includes(weatherCode)) {
       tips.push({ emoji: "⚡", text: "Гроза! Уникайте відкритих просторів та водойм." });
     }
-
-    // UV tips
     if (uvIndex >= 8) {
       tips.push({ emoji: "🕶️", text: `УФ-індекс ${Math.round(uvIndex)} — надзвичайно висока активність. Сонцезахисний крем SPF 50+ обов'язковий.` });
     } else if (uvIndex >= 6) {
@@ -40,30 +89,21 @@ export default function WeatherSuggestions({ data, unit }) {
     } else if (uvIndex >= 3) {
       tips.push({ emoji: "😎", text: `УФ-індекс ${Math.round(uvIndex)} — помірний рівень УФ. Сонцезахисні окуляри будуть корисні.` });
     }
-
-    // Wind tips
     if (windSpeed >= 50) {
       tips.push({ emoji: "💨", text: "Сильний вітер! Уникайте парасоль, тримайтесь міцніше на висоті." });
     } else if (windSpeed >= 30) {
       tips.push({ emoji: "🌬️", text: "Помітний вітер — легкі предмети можуть відлетіти. Одягніть вітрозахисну куртку." });
     }
-
-    // Snow tips
     if ([71,73,75,85,86].includes(weatherCode)) {
       tips.push({ emoji: "🥾", text: "Очікується сніг — взуйте нековзке взуття, будьте обережні на дорогах." });
     }
-
-    // Fog tips
     if ([45,48].includes(weatherCode)) {
       tips.push({ emoji: "🚗", text: "Туман знижує видимість. При водінні увімкніть протитуманні вогні." });
     }
-
-    // Perfect weather tip
     if (tips.length === 0 && temp >= 15 && temp <= 25) {
       tips.push({ emoji: "🌿", text: "Чудова погода для прогулянки або пікніка на свіжому повітрі!" });
       tips.push({ emoji: "🚴", text: "Ідеальний день для велосипедної прогулянки або заняття спортом на вулиці." });
     }
-
     if (tips.length === 0) {
       tips.push({ emoji: "✅", text: "Погода в межах норми. Одягайтесь відповідно до температури і все буде добре." });
     }
@@ -73,6 +113,8 @@ export default function WeatherSuggestions({ data, unit }) {
 
   const outfit = getOutfit();
   const tips = getTips();
+  const walkTime = getBestWalkTime();
+  const tomorrow = getTomorrowComparison();
 
   return (
     <section className="glass-panel suggestions-panel fade-in">
@@ -94,6 +136,32 @@ export default function WeatherSuggestions({ data, unit }) {
             <p className="suggestion-desc">{tip.text}</p>
           </div>
         ))}
+
+        {/* Best walk time - always shown */}
+        {walkTime && (
+          <div className="suggestion-card walk-card">
+            <div className="suggestion-icon">🚶</div>
+            <div>
+              <h3 className="suggestion-title">Найкращий час для прогулянки</h3>
+              <p className="suggestion-desc">
+                Оптимально вийти о <strong>{walkTime.hour}</strong> — {walkTime.temp}°{unit}, мінімальний вітер і найменша ймовірність опадів.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Tomorrow comparison - always shown */}
+        {tomorrow && (
+          <div className="suggestion-card tomorrow-card">
+            <div className="suggestion-icon">{tomorrow.emoji}</div>
+            <div>
+              <h3 className="suggestion-title" style={{ color: tomorrow.color }}>
+                Завтра: {tomorrow.trend}
+              </h3>
+              <p className="suggestion-desc">{tomorrow.desc}</p>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
