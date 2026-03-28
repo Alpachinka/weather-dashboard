@@ -88,6 +88,15 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
           </div>
         </div>
         <div className="detail-item">
+          <i className="fa-solid fa-gauge-high"></i>
+          <div>
+            <p className="label">Тиск повітря</p>
+            <p id="pressure" className="val">
+              {current.surface_pressure ? Math.round(current.surface_pressure) : "--"} гПа
+            </p>
+          </div>
+        </div>
+        <div className="detail-item">
           <i className="fa-solid fa-temperature-half"></i>
           <div>
             <p className="label">Відчувається як</p>

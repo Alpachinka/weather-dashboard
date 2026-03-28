@@ -11,7 +11,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [unit, setUnit] = useState("C");
-  
+
   // Favorites State
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem("weather-favorites");
@@ -95,7 +95,7 @@ export default function App() {
           unit={unit}
           onToggleUnit={() => setUnit(unit === "C" ? "F" : "C")}
         />
-        
+
         {favorites.length > 0 && (
           <div className="favorites-container">
             {favorites.map((fav, idx) => (

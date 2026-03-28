@@ -20,6 +20,7 @@ export const WeatherResponseSchema = z.object({
     precipitation: z.number().optional(),
     weather_code: z.number(),
     wind_speed_10m: z.number(),
+    surface_pressure: z.number().optional(),
   }),
   hourly: z.object({
     time: z.array(z.string()),
