@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import SearchBar from "./components/SearchBar";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyForecast from "./components/HourlyForecast";
 import WeeklyForecast from "./components/WeeklyForecast";
 import WeatherSuggestions from "./components/WeatherSuggestions";
 import WindyMap from "./components/WindyMap";
+import AuthGate from "./components/AuthGate";
 import { getWeather, parseWeatherCode } from "./api";
 
 export default function App() {
@@ -13,19 +16,40 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [unit, setUnit] = useState("C");
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  // Favorites State
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem("weather-favorites");
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Listen to Firebase auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Favorites State — only for logged-in users
+  const favKey = user ? `weather-favorites-${user.uid}` : null;
+
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("weather-favorites", JSON.stringify(favorites));
-  }, [favorites]);
+    if (favKey) {
+      const saved = localStorage.getItem(favKey);
+      setFavorites(saved ? JSON.parse(saved) : []);
+    } else {
+      setFavorites([]);
+    }
+  }, [favKey]);
+
+  useEffect(() => {
+    if (favKey) {
+      localStorage.setItem(favKey, JSON.stringify(favorites));
+    }
+  }, [favorites, favKey]);
 
   const toggleFavorite = (locationPayload) => {
-    if (!locationPayload) return;
+    if (!locationPayload || !user) return;
     const isFav = favorites.find((f) => f.name === locationPayload.name);
     if (isFav) {
       setFavorites(favorites.filter((f) => f.name !== locationPayload.name));
@@ -42,7 +66,6 @@ export default function App() {
       setWeatherData(data);
       setCurrentLocation({ lat, lon, name });
 
-      // Change background
       const wInfo = parseWeatherCode(data.current.weather_code);
       document.body.className = wInfo.bg;
     } catch (err) {
@@ -79,7 +102,6 @@ export default function App() {
     }
   };
 
-  // On mount
   useEffect(() => {
     getUserLocation(50.4501, 30.5234, "Київ");
   }, []);
@@ -87,6 +109,8 @@ export default function App() {
   const isCurrentFavorite = currentLocation
     ? favorites.some((f) => f.name === currentLocation.name)
     : false;
+
+  if (authLoading) return null; // Don't flash UI before auth resolves
 
   return (
     <div id="app-container" className="glass-panel main-container fade-in" style={{ position: "relative" }}>
@@ -96,9 +120,10 @@ export default function App() {
           onRequestGeoLocation={() => getUserLocation()}
           unit={unit}
           onToggleUnit={() => setUnit(unit === "C" ? "F" : "C")}
+          user={user}
         />
 
-        {favorites.length > 0 && (
+        {user && favorites.length > 0 && (
           <div className="favorites-container">
             {favorites.map((fav, idx) => (
               <button
@@ -135,6 +160,7 @@ export default function App() {
               isFavorite={isCurrentFavorite}
               onToggleFavorite={() => toggleFavorite(currentLocation)}
               unit={unit}
+              user={user}
             />
             <HourlyForecast hourly={weatherData.hourly} unit={unit} />
             <WeeklyForecast daily={weatherData.daily} unit={unit} />
@@ -143,8 +169,12 @@ export default function App() {
 
         {!loading && !error && weatherData && currentLocation && (
           <>
-            <WeatherSuggestions data={weatherData} unit={unit} />
-            <WindyMap lat={currentLocation.lat} lon={currentLocation.lon} />
+            <AuthGate user={user} featureName="Рекомендації на сьогодні">
+              <WeatherSuggestions data={weatherData} unit={unit} />
+            </AuthGate>
+            <AuthGate user={user} featureName="Карта вітру та погоди">
+              <WindyMap lat={currentLocation.lat} lon={currentLocation.lon} />
+            </AuthGate>
           </>
         )}
       </main>

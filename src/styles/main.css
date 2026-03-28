@@ -171,6 +171,63 @@ input[type="text"] {
     min-width: 0;
 }
 
+/* === Auth Gate === */
+.auth-gate {
+    padding: 50px 30px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-gate-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    max-width: 380px;
+}
+
+.auth-gate-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.auth-gate-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.auth-gate-desc {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+.google-signin-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: #333;
+    border: none;
+    border-radius: 24px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.google-signin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
 input[type="text"]::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }

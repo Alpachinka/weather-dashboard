@@ -10,7 +10,7 @@ const daysMap = [
   "Субота",
 ];
 
-export default function CurrentWeather({ data, cityName, isFavorite, onToggleFavorite, unit }) {
+export default function CurrentWeather({ data, cityName, isFavorite, onToggleFavorite, unit, user }) {
   if (!data?.current) return null;
 
   const current = data.current;
@@ -38,7 +38,7 @@ export default function CurrentWeather({ data, cityName, isFavorite, onToggleFav
       <div className="weather-header" style={{ position: "relative" }}>
         <h1 id="city-name" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
           {cityName || "--"}
-          {cityName && (
+          {cityName && user && (
             <i
               className={isFavorite ? "fa-solid fa-star" : "fa-regular fa-star"}
               onClick={onToggleFavorite}
