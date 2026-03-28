@@ -497,6 +497,7 @@ section h2 {
 /* === Suggestions Panel === */
 .suggestions-panel {
     padding: 30px;
+    margin-top: 20px;
 }
 
 .suggestions-grid {
@@ -544,6 +545,7 @@ section h2 {
 /* === Windy Map Panel === */
 .windy-panel {
     padding: 30px;
+    margin-top: 20px;
 }
 
 .windy-subtitle {
